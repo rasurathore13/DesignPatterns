@@ -161,3 +161,60 @@ let secondHandler = new SecondHandler(thridHandler)
 let firstHandler = new FirstHandler(secondHandler);
 
 firstHandler.handle("Test Data");
+
+
+// Command patter
+// Command is a behavioural design pattern that converts a request in to a standalone object 
+// this standalong object has all the required values needed to execute the request
+
+interface ICommand{
+    execute():void;
+};
+
+class SimpleCommand implements ICommand{
+    private payload: string;
+
+    constructor(payload: string){
+        this.payload = payload;
+    }
+
+    execute():void{
+        if(this.payload){
+            console.log('Doing something simple like printing the paylad->'+this.payload);
+        }
+    }
+}
+
+class ComplexCommand implements ICommand{
+    private receiver: Receiver;
+    private a : string;
+    private b: string;
+    constructor(receiver: Receiver,a:string,b:string){
+        this.receiver = receiver;
+        this.a = a;
+        this.b = b;
+    }
+    execute(): void{
+        this.receiver.doSomethingWithA(this.a);
+        this.receiver.doSomethingWithB(this.b);
+    }
+}
+
+class Receiver {
+    
+
+    doSomethingWithA(a:string): void{
+        console.log("Doing something with a->"+a);
+    }
+
+    doSomethingWithB(b:string):  void{
+        console.log("Doing something with b -> "+b)
+    }
+
+}
+
+let receiver = new Receiver();
+let complexCommand = new ComplexCommand(receiver,'this is a','this is b');
+let simpleCommand = new SimpleCommand('this is a simple payload for simple command');
+simpleCommand.execute();
+complexCommand.execute();
