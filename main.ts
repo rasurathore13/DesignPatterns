@@ -342,58 +342,84 @@ class OriginalObject{
     revert(momento: IMomento): void {
         this.state = momento.getState()
     }
-}
-
-
-class MomentoUser{
-    private momentos: IMomento[] ;
-    private originalObject : OriginalObject;
-    constructor(originalObject: OriginalObject){
-        this.originalObject = originalObject;
-        this.momentos = [];
-    }
-
-    changeState():void{
-        this.originalObject.changeState();
-    }
-
     printCurrentState(){
-        console.log(this.originalObject.save().getState());
-    }
-
-    takeSnapShot(){
-        let currentState = this.originalObject.save()
-        this.momentos.push(currentState);    
-    }
-
-    goBack(){
-        let momento = this.momentos.pop();
-        if (momento != undefined || momento != null){
-            this.originalObject.revert(momento);
-            
-        }else {
-            console.log("No snapshots present");
-        }
+        console.log(this.state);
     }
 }
+
+
+// class MomentoUser{
+//     private momentos: IMomento[] ;
+//     private originalObject : OriginalObject;
+//     constructor(originalObject: OriginalObject){
+//         this.originalObject = originalObject;
+//         this.momentos = [];
+//     }
+
+//     changeState():void{
+//         this.originalObject.changeState();
+//     }
+
+//     printCurrentState(){
+//         console.log(this.originalObject.save().getState());
+//     }
+
+//     takeSnapShot(){
+//         let currentState = this.originalObject.save()
+//         this.momentos.push(currentState);    
+//     }
+
+//     goBack(){
+//         let momento = this.momentos.pop();
+//         if (momento != undefined || momento != null){
+//             this.originalObject.revert(momento);
+            
+//         }else {
+//             console.log("No snapshots present");
+//         }
+//     }
+// }
 
 let originalObject = new OriginalObject('initialString');
-let momentoUser = new MomentoUser(originalObject);
-momentoUser.takeSnapShot();
-momentoUser.printCurrentState();
+let momentos : IMomento[] = [];
 
-momentoUser.changeState();
-momentoUser.takeSnapShot();
-momentoUser.printCurrentState();
+momentos.push(originalObject.save());
+originalObject.printCurrentState()
 
-momentoUser.changeState();
-momentoUser.takeSnapShot();
-momentoUser.printCurrentState();
+originalObject.changeState();
+momentos.push(originalObject.save());
+originalObject.printCurrentState()
 
-momentoUser.goBack();
-momentoUser.printCurrentState();
-momentoUser.goBack();
-momentoUser.printCurrentState();
-momentoUser.goBack();
-momentoUser.printCurrentState();
-momentoUser.goBack();
+originalObject.changeState();
+momentos.push(originalObject.save());
+originalObject.printCurrentState()
+
+originalObject.revert(momentos.pop()!)
+originalObject.printCurrentState();
+
+originalObject.revert(momentos.pop()!)
+originalObject.printCurrentState();
+
+originalObject.revert(momentos.pop()!)
+originalObject.printCurrentState();
+
+
+// let momentoUser = new MomentoUser(originalObject);
+// momentoUser.takeSnapShot();
+// momentoUser.printCurrentState();
+
+// momentoUser.changeState();
+// momentoUser.takeSnapShot();
+// momentoUser.printCurrentState();
+
+// momentoUser.changeState();
+// momentoUser.takeSnapShot();
+// momentoUser.printCurrentState();
+
+// momentoUser.goBack();
+// momentoUser.printCurrentState();
+// momentoUser.goBack();
+// momentoUser.printCurrentState();
+// momentoUser.goBack();
+// momentoUser.printCurrentState();
+// momentoUser.goBack();
