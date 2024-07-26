@@ -218,3 +218,182 @@ let complexCommand = new ComplexCommand(receiver,'this is a','this is b');
 let simpleCommand = new SimpleCommand('this is a simple payload for simple command');
 simpleCommand.execute();
 complexCommand.execute();
+
+
+//Mediator pattern 
+//Mediator is behavioural design pattern that  decouples 2 component of an application by letting
+// them talk to each other via a mediator object
+
+interface IMediator{
+    notify(data:string): void;
+}
+
+interface IComponent{
+    setMediator(mediator: IMediator): void;
+    doTask(data:string): void;
+}
+
+class ConcreteMediator implements IMediator{
+    private component1: IComponent;
+    private component2: IComponent;
+
+    constructor(component1: IComponent, component2: IComponent){
+        this.component1 = component1;
+        this.component2 = component2;
+    }
+
+    notify(event: string){
+        if(event == 'A'){
+            this.component2.doTask('A');
+        }
+        if (event == 'D'){
+            this.component1.doTask('B');
+        }
+    }
+}
+
+class Component1 implements IComponent{
+    private mediator: IMediator;
+    constructor(mediator?: IMediator){
+        this.mediator = mediator!;
+    }
+    setMediator(mediator: IMediator):void{
+        this.mediator = mediator;
+    }
+    doTask(data:string){
+        console.log('DoTask triggered of Component 1 with data ->'+data);
+    }
+    doA(){
+        console.log("Event A triggered from Component 1");
+        this.mediator.notify('A');
+    }
+    doB(){
+        console.log("Event B triggered from Component 1");
+        this.mediator.notify('B');
+    }
+}
+
+class Component2 implements IComponent{
+    private mediator: IMediator;
+    constructor(mediator?: IMediator){
+        this.mediator = mediator!;
+    }
+    setMediator(mediator: IMediator):void{
+        this.mediator = mediator;
+    }
+    doTask(data:string){
+        console.log('DoTask triggered of Component 2 with data ->'+data);
+    }
+    doC(){
+        console.log("Event C triggered from Component 2");
+        this.mediator.notify('C');
+    }
+    doD(){
+        console.log("Event D triggered from Component 2");
+        this.mediator.notify('D');
+    }
+}
+
+
+let comp1 = new Component1();
+let comp2 = new Component2();
+let mediator = new ConcreteMediator(comp1,comp2);
+comp1.setMediator(mediator);
+comp2.setMediator(mediator);
+comp1.doA();
+comp2.doD();
+
+
+//Momento is a behavioural design pattern that lets you take snapshot of an object so that you can
+// revert back to the older state of the object.
+
+interface IMomento{
+    getState():string;
+}
+
+class MomentoClass implements IMomento{
+    
+    private state: string;
+
+    constructor(state: string){
+        this.state = state;
+    }
+
+    getState(): string{
+        return this.state;
+    }
+}
+
+class OriginalObject{
+    private state : string;
+    private count = 0;
+    constructor(state: string){
+        this.state = state;
+    }
+    changeState():void{
+        this.state = this.state+this.count;
+        this.count += 1;
+    }
+
+    save(): IMomento{
+        return new MomentoClass(this.state);
+    }
+
+    revert(momento: IMomento): void {
+        this.state = momento.getState()
+    }
+}
+
+
+class MomentoUser{
+    private momentos: IMomento[] ;
+    private originalObject : OriginalObject;
+    constructor(originalObject: OriginalObject){
+        this.originalObject = originalObject;
+        this.momentos = [];
+    }
+
+    changeState():void{
+        this.originalObject.changeState();
+    }
+
+    printCurrentState(){
+        console.log(this.originalObject.save().getState());
+    }
+
+    takeSnapShot(){
+        let currentState = this.originalObject.save()
+        this.momentos.push(currentState);    
+    }
+
+    goBack(){
+        let momento = this.momentos.pop();
+        if (momento != undefined || momento != null){
+            this.originalObject.revert(momento);
+            
+        }else {
+            console.log("No snapshots present");
+        }
+    }
+}
+
+let originalObject = new OriginalObject('initialString');
+let momentoUser = new MomentoUser(originalObject);
+momentoUser.takeSnapShot();
+momentoUser.printCurrentState();
+
+momentoUser.changeState();
+momentoUser.takeSnapShot();
+momentoUser.printCurrentState();
+
+momentoUser.changeState();
+momentoUser.takeSnapShot();
+momentoUser.printCurrentState();
+
+momentoUser.goBack();
+momentoUser.printCurrentState();
+momentoUser.goBack();
+momentoUser.printCurrentState();
+momentoUser.goBack();
+momentoUser.printCurrentState();
+momentoUser.goBack();
