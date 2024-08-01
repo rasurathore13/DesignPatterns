@@ -423,3 +423,60 @@ originalObject.printCurrentState();
 // momentoUser.goBack();
 // momentoUser.printCurrentState();
 // momentoUser.goBack();
+
+
+// Observer is a behavioural design pattern that let's one object inform other objects about
+// any change in the state of the object.
+
+interface IObserver {
+    observe(state: string): void;
+}
+
+class Observer implements IObserver{
+    private observerNumber : number;
+    private currentStateOfTheSubject : string = '';
+    constructor(observerNumber: number){
+        this.observerNumber = observerNumber;
+    }
+    observe(state: string): void{
+        console.log(this.observerNumber + ' observer is informed of the state which is ->'+state);
+        this.currentStateOfTheSubject = state;
+    }
+}
+
+interface ISubject{
+    attach(observer: IObserver):void;
+    notify(state: string):void;
+}
+
+class SubjectClass implements ISubject{
+    private observers: IObserver[] = [];
+    private state: string;
+    constructor(state: string){
+        this.state = state;
+    }
+    attach(observer: IObserver):void{
+        this.observers.push(observer);
+    }
+    
+    notify(): void{
+        this.observers.forEach(x => {
+            x.observe(this.state);
+        })
+    }
+    modifyState(){
+        this.state = this.state+Math.random().toString();
+        this.notify();
+    }
+}
+
+let subject = new SubjectClass('Start');
+let observer1 = new Observer(1); 
+let observer2 = new Observer(2);
+let observer3 = new Observer(3);
+subject.attach(observer1);
+subject.attach(observer2);
+subject.attach(observer3);
+
+subject.modifyState();
+subject.modifyState();
