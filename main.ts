@@ -480,3 +480,44 @@ subject.attach(observer3);
 
 subject.modifyState();
 subject.modifyState();
+
+
+// State design pattern is a behavioural design pattern that changes the behaviour of an object
+// whenever there is a change in the internal state of the object.
+interface IState{
+    handleRequest(): void;
+}
+
+class StateA implements IState{
+
+    public handleRequest(): void {
+        console.log("Handling request from State A")
+    }
+}
+
+class StateB implements IState{
+    public handleRequest(): void{
+        console.log("Handling request from State B")
+    }
+}
+
+
+class Context{
+    private state: IState;
+    constructor(initialState: IState){
+        this.state = initialState;
+    }
+
+    public changeState(state: IState): void{
+        this.state = state;
+    }
+
+    public request(): void{
+        this.state.handleRequest();
+    }
+}
+
+let context = new Context(new StateA);
+context.request(); // prints - "Handling request from State A
+context.changeState(new StateB);
+context.request(); // prints - Handling request from State B
