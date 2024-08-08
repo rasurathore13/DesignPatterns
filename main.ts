@@ -521,3 +521,49 @@ let context = new Context(new StateA);
 context.request(); // prints - "Handling request from State A
 context.changeState(new StateB);
 context.request(); // prints - Handling request from State B
+
+
+// Stratergy is a behavioural design pattern that let's you define a collection of algorithms,
+// Put each of the algo in their separate class and make their object intechangeable,
+//  So that the functionality/behaviour remains same but the underlying algorithm changes
+
+interface ISortStratergy{
+    performSort(data: number[]): number[];
+}
+
+class MergeSort implements ISortStratergy{
+    public performSort(data: number[]): number[] {
+        console.log("Performing sort using Merge");
+        return data;
+    }
+}
+
+class QuickSort implements ISortStratergy{
+    public performSort(data: number[]): number[]{
+        console.log("Performing Quick Sort");
+        return data;
+    }
+}
+
+class SortClass{
+    private sortStratergy: ISortStratergy;
+    constructor(initialSortStratergy: ISortStratergy){
+        this.sortStratergy = initialSortStratergy;
+    }
+
+    setSortingAlgo(sortStratergy: ISortStratergy){
+        this.sortStratergy = sortStratergy;
+    }
+
+    sort(data: number[]){
+        this.sortStratergy.performSort(data);
+    }
+}
+
+let data : number[] = [1,2,3,4,5];
+let quickSort = new QuickSort();
+let mergeSort = new MergeSort();
+let sortClass = new SortClass(quickSort);
+sortClass.sort(data);
+sortClass.setSortingAlgo(mergeSort);
+sortClass.sort(data);
