@@ -1,3 +1,95 @@
+// Builder Design pattern
+// Builder design pattern is a creation design pattern that helps in creation of complex objects.
+// Speically the ones that have a lot of optional and non optional parameters that needs initialization
+// So rather than passing all the needed parameter to the constructor, we delegate that task to a 
+//  builder class and it takes care of initializing the parameters that are required.
+
+interface ISportsStarsListBuilder{
+    pushGolfers(golfersList: string[]): void;
+    pushCricketers(cricketersList: string[]): void;
+    pushFootballers(footballersList: string[]):void;
+    getSportsStarsList(): Map<string, string[]>;
+}
+
+//This is the actual class that needs building,
+// here we have 3 different sprots category,
+// Sometime we would need 1, sometime we would need all 3 categories to be initialzed.
+// Delegating the initalization process to a builder class, helps in complext object creation like this.
+// If we would have NOT delegated the initialization to a builder 
+// then the constructor would need to have unnessecery params
+class SportsStarsList {
+
+  private sp: Map<string, string[]> = new Map<string, string[]>([
+    ['golfers', []],
+    ['footballers', []],
+    ['cricketers', []]
+  ]);
+
+  addSportsPeople(sportsName: string, sportsPersonList: string[]): void {
+    this.sp.set(sportsName.toLowerCase(), sportsPersonList);
+  }
+
+  getAllSports(): Map<string, string[]> {
+    return this.sp;
+  }
+}
+
+//This is the builder class, this class helps in initialzing the actual class.
+//In this class each function initializes one parameter and returns the current object for method chaining.
+class SportsStarsListBuilder implements ISportsStarsListBuilder {
+
+    private SportsStarsList : SportsStarsList;
+
+    constructor() {
+        this.SportsStarsList = new SportsStarsList();
+    }
+
+    pushGolfers(golfersList: string[]): this {
+        this.SportsStarsList.addSportsPeople('golfers', golfersList);
+        return this;
+    }
+
+    pushCricketers(cricketersList: string[]): this {
+        this.SportsStarsList.addSportsPeople('cricketers', cricketersList);
+        return this;
+    }
+
+    pushFootballers(footballersList: string[]): this {
+        this.SportsStarsList.addSportsPeople('footballers', footballersList);
+        return this;
+    }
+
+    getSportsStarsList(): Map<string, string[]> {
+        var a = this.SportsStarsList.getAllSports();
+
+        //We reset the original class as in builder it is convention to reset so that 
+        // before calling the get method again, we will have to reinitialize.
+        this.SportsStarsList = new SportsStarsList();
+        return a;
+    }
+
+}
+
+//Below is the driver code or client code
+//here we can call the function related to the parameter we need to initialze.
+
+//Calling just 1 parameter initalization
+let sportsStarsListBuilder: SportsStarsListBuilder = new SportsStarsListBuilder();
+let minimalParameterInit = sportsStarsListBuilder.pushCricketers([
+    'Dhoni','Kohli'
+]);
+console.log(minimalParameterInit.getSportsStarsList());
+
+//calling all parameter initialization
+let maximumParameterInit = sportsStarsListBuilder.pushCricketers([
+            'Dhoni', 'Kohli'
+        ]).pushFootballers([
+            'Messi', 'Ronaldo'
+        ]).pushGolfers([
+            'Woods'
+        ]);
+console.log(maximumParameterInit.getSportsStarsList());
+
 //Bridge with Factory
 // Use factory and bridge when u want to switch between multiple options in any system like - 
 // If you want to switch between multiplt notifications in a notification system, 
